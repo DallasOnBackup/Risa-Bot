@@ -22,7 +22,7 @@ client.on('ready', () => {
 client.on('message', msg => {
   const args = msg.content.slice(prefix.length).trim().split(' ');
 
-  if (msg.content.startsWith(prefix+"av")) {
+  if (msg.content.startsWith(prefix + "av")) {
 
     /*
     ========================================================
@@ -35,7 +35,7 @@ client.on('message', msg => {
     } else {
       msg.reply(msg.author.displayAvatarURL());
     }
-  } else if (msg.content.startsWith(prefix+"kick")) {
+  } else if (msg.content.startsWith(prefix + "kick")) {
 
     /*
     ========================================================
@@ -50,7 +50,7 @@ client.on('message', msg => {
         const member = msg.guild.member(user);
         if (member) {
           member.kick().then(() => {
-            msg.reply("Sucessfully kicked "+user.tag+"!");
+            msg.reply("Sucessfully kicked " + user.tag + "!");
           });
         } else {
           msg.reply("Invalid User Stated!");
@@ -61,7 +61,7 @@ client.on('message', msg => {
     } else {
       msg.reply("Invalid Permissions!");
     }
-  } else if (msg.content.startsWith(prefix+"invite")) {
+  } else if (msg.content.startsWith(prefix + "invite")) {
 
     /*
     ========================================================
@@ -70,28 +70,30 @@ client.on('message', msg => {
     */
 
     msg.reply("You can invite daBot to your server by clicking on the following link: https://discord.com/api/oauth2/authorize?client_id=824186494385520691&permissions=8&scope=bot");
-  } else if (msg.content.startsWith(prefix+"ban")) {
+  } else if (msg.content.startsWith(prefix + "ban")) {
 
     /*
     ========================================================
     Bans User from server if user mentions, otherwise produces an error
     ========================================================
     */
-  const user = msg.mentions.users.first();
+    const user = msg.mentions.users.first();
 
-  if (msg.member.hasPermission("BAN_MEMBERS")) {
-    if (user) {
-      const member = msg.guild.member(user);
-      if (member) {
-        member.ban().then(() => {
-          msg.reply("Sucessfully banned "+user.tag+"!");
-        });
+    if (msg.member.hasPermission("BAN_MEMBERS")) {
+      // User is valid and in the guild
+      if (user) {
+        const member = msg.guild.member(user);
+        if (member) {
+          member.ban().then(() => {
+            msg.reply("Sucessfully banned " + user.tag + "!");
+          });
+        } else {
+          msg.reply("Invalid User Stated!");
+        }
       } else {
-        msg.reply("Invalid User Stated!");
+        msg.reply("User not Stated!");
       }
     } else {
-      msg.reply("User not Stated!");
-    } } else {
       msg.reply("Invalid Permissions!");
     }
 
@@ -101,16 +103,17 @@ client.on('message', msg => {
     ========================================================
     */
 
-  } else if (msg.content.startsWith(prefix+"coinflip")) {
+  } else if (msg.content.startsWith(prefix + "coinflip")) {
     if (Math.floor(Math.random() * 2) == 0) {
       coinResult = "Heads!";
     } else {
       coinResult = "Tails!";
     }
+    // Embedded Result
     const msgEmbed = new Discord.MessageEmbed()
       .setColor(color)
       .setTitle("Coin Flip")
-      .addField("Result:", "It's **"+coinResult+"**!")
+      .addField("Result:", "It's **" + coinResult + "**!")
       .setFooter("use '?coinflip' to do a coin flip in the future!");
     msg.reply(msgEmbed);
 
@@ -120,14 +123,14 @@ client.on('message', msg => {
     =======================================================
     */
 
-  } else if (msg.content.startsWith(prefix+"hide")) {
+  } else if (msg.content.startsWith(prefix + "hide")) {
     msg.delete();
     const msgEmbed = new Discord.MessageEmbed()
       .setColor(color)
       .setTitle("Hidden Author")
       .addField("Message:", args[1], true);
     msg.channel.send(msgEmbed).catch();
-  } else {}
+  } else { }
 });
 
 client.login(process.env.DISCORD_TOKEN);
