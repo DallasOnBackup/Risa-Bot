@@ -1,6 +1,5 @@
 //  ================== APP START =====================
 const express = require('express');
-fs = require('fs');
 const app = express();
 const port = 3000;
 
@@ -14,8 +13,39 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const prefix = "da!";
 const color = "#17e825";
+var watching = true;
+
+function updateStatus() {
+  if (watching) {
+    watching = false;
+    client.user.setPresence({
+        status: 'online',
+        activity: {
+            name: `${prefix}help`,
+            type: "PLAYING"
+        }
+    });
+  } else {
+    watching = true;
+    client.user.setPresence({
+        status: 'online',
+        activity: {
+            name: `${client.guilds.cache.size} servers!`,
+            type: "WATCHING"
+        }
+    });
+  }
+}
 
 client.on('ready', () => {
+  client.user.setPresence({
+        status: 'online',
+        activity: {
+            name: `${client.guilds.cache.size} servers!`,
+            type: "WATCHING"
+        }
+    });
+    setInterval(updateStatus, 10000);
   console.log(`Successfully Logged in as ${client.user.tag}!`);
 });
 
@@ -144,6 +174,37 @@ client.on('message', message => {
       .setTitle("Hidden Author")
       .addField("Message:", args[1], true);
     message.channel.send(embed).catch();
+
+    /*
+    =======================================================
+      Gets the Bot's Ping to Discord Servers
+    =======================================================
+    */
+
+  } else if (message.content.startsWith(prefix+"ping")) {
+    message.reply(`daBot has a Ping of ${Date.now() - message.createdTimestamp}ms!`);
+
+    /*
+    =======================================================
+      Shows List of Commands for daBot
+    =======================================================
+    */
+
+  } else if (message.content.startsWith(prefix+"help")) {
+    embed = new Discord.MessageEmbed()
+      .setTitle("Command Help")
+      .setColor(color)
+      .setFooter("daBot made by AnxietySucks#2863")
+      .addFields(
+        {name: prefix+"help", value: "List of Commands"},
+        {name: prefix+"av", value: "Shows User PFP, if user is mentioned, shows their PFP"},
+        {name: prefix+"coinflip", value: "Flips a Virtual Coin that results in Heads or Tails!"},
+        {name: prefix+"kick", value: "Kicks Mentioned user from the Server"},
+        {name: prefix+"ban", value: "Bans Mentioned user from the Server"},
+        {name: prefix+"hide", value: "Sends Message with bot, then deletes the command message"},
+        {name: prefix+"ping", value: "Gets daBot's Ping to Discord Servers!"}
+      );
+      message.channel.send(embed);
   } else { }
 });
 
