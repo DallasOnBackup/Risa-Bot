@@ -88,7 +88,11 @@ client.on('message', message => {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
           member.kick(modReason).then(() => {
-            message.reply("Sucessfully kicked " + user.tag + "!");
+            const embed = new Discord.MessageEmbed()
+              .setColor(color)
+              .setDescription(`**Successfully kicked ${user.tag}!**`)
+              .setFooter(`Command Called by ${message.author.tag}`);
+            message.reply(embed);
           });
         } else {
           message.reply("Invalid User Stated!");
@@ -106,8 +110,14 @@ client.on('message', message => {
       Shows invite URL for daBot
     ========================================================
     */
+    const embed = new Discord.MessageEmbed()
+      .setTitle("Invite daBot to your Server")
+      .addField("Also consider Joining daBot's Support Server!", "https://discord.gg/arg58rFJ8m")
+      .setColor(color)
+      .setURL("https://discord.com/api/oauth2/authorize?client_id=824186494385520691&permissions=8&scope=bot")
+      .setFooter("daBot made by AnxietySucks#2863");
 
-    message.reply("You can invite daBot to your server by clicking on the following link: https://discord.com/api/oauth2/authorize?client_id=824186494385520691&permissions=8&scope=bot");
+    message.reply(embed);
   } else if (message.content.startsWith(prefix + "ban")) {
 
     /*
@@ -125,7 +135,11 @@ client.on('message', message => {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
           member.ban(modReason).then(() => {
-            message.reply("Sucessfully banned " + user.tag + "!");
+            const embed = new Discord.MessageEmbed()
+              .setColor(color)
+              .setDescription(`**Successfully banned ${user.tag}!**`)
+              .setFooter(`Command Called by ${message.author.tag}`);
+            message.reply(embed);
           });
         } else {
           message.reply("Invalid User Stated!");
@@ -183,7 +197,6 @@ client.on('message', message => {
 
   } else if (message.content.startsWith(prefix+"ping")) {
     message.reply(`daBot has a Ping of ${Date.now() - message.createdTimestamp}ms!`);
-
     /*
     =======================================================
       Shows List of Commands for daBot
@@ -192,7 +205,7 @@ client.on('message', message => {
 
   } else if (message.content.startsWith(prefix+"help")) {
     embed = new Discord.MessageEmbed()
-      .setTitle("Command Help")
+      .setTitle("Support Server")
       .setColor(color)
       .setFooter("daBot made by AnxietySucks#2863")
       .addFields(
@@ -202,8 +215,8 @@ client.on('message', message => {
         {name: prefix+"kick", value: "Kicks Mentioned user from the Server"},
         {name: prefix+"ban", value: "Bans Mentioned user from the Server"},
         {name: prefix+"hide", value: "Sends Message with bot, then deletes the command message"},
-        {name: prefix+"ping", value: "Gets daBot's Ping to Discord Servers!"}
-      );
+        {name: prefix+"ping", value: "Gets daBot's Ping to Discord Servers!"})
+        .setURL("https://discord.gg/arg58rFJ8m");
       message.channel.send(embed);
   } else { }
 });
