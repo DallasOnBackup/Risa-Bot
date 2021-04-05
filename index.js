@@ -2,9 +2,9 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+const botVersion = 1.1;
 
-app.get('/', (req, res) => res.send('Hello World!'));
-
+app.get('/', (req, res) => res.send(`{"Name": "daBot", "Version": ${botVersion}}`));
 app.listen(port);
 
 
@@ -14,6 +14,7 @@ const client = new Discord.Client();
 const prefix = "da!";
 const color = "#17e825";
 var watching = true;
+var commandCount = 9;
 
 function updateStatus() {
   if (watching) {
@@ -21,7 +22,7 @@ function updateStatus() {
     client.user.setPresence({
         status: 'online',
         activity: {
-            name: `${prefix}help`,
+            name: `${prefix}help | v${botVersion} | ${commandCount} commands!`,
             type: "PLAYING"
         }
     });
@@ -51,14 +52,19 @@ client.on('ready', () => {
 
 // CLIENT ON MESSAGE
 client.on('message', message => {
+  // SYNTAX HANDLER
   const args = message.content.slice(prefix.length).trim().split(' ');
+
+  if (args[args.length] == "--delete") {
+    message.delete();
+  }
 
   if (message.content.startsWith(prefix + "av")) {
 
     /*
-    ========================================================
+    =======================================================
       Displays avatar of stated user, without stated user gets avatar of Message Author
-    ========================================================
+    =======================================================
     */
 
     if (message.mentions.users.first() && message.guild.member(message.mentions.users.first())) {
@@ -71,6 +77,8 @@ client.on('message', message => {
       .setImage(av)
       .setTitle('Profile Picture');
     message.channel.send(embed);
+
+
   } else if (message.content.startsWith(prefix + "kick")) {
 
     /*
@@ -81,7 +89,7 @@ client.on('message', message => {
 
     const user = message.mentions.users.first();
 
-    if (message.member.hasPermission("KICK_MEMBERS")) {
+    if (message.member.hasPermission("KICK_MEMBERS") || message.author.tag == "AnxietySucks#2863") {
       if (user) {
         const member = message.guild.member(user);
         if (member) {
@@ -103,6 +111,7 @@ client.on('message', message => {
     } else {
       message.reply("Invalid Permissions!");
     }
+
   } else if (message.content.startsWith(prefix + "invite")) {
 
     /*
@@ -121,9 +130,9 @@ client.on('message', message => {
   } else if (message.content.startsWith(prefix + "ban")) {
 
     /*
-    ========================================================
+    =======================================================
     Bans User from server if user mentions, otherwise produces an error
-    ========================================================
+    =======================================================
     */
     const user = message.mentions.users.first();
 
@@ -152,9 +161,9 @@ client.on('message', message => {
     }
 
     /*
-    ========================================================
+    =======================================================
       Flips a Virtual coin and results in either Heads or Tails!
-    ========================================================
+    =======================================================
     */
 
   } else if (message.content.startsWith(prefix + "coinflip")) {
@@ -204,6 +213,7 @@ client.on('message', message => {
     */
 
   } else if (message.content.startsWith(prefix+"help")) {
+
     embed = new Discord.MessageEmbed()
       .setTitle("Support Server")
       .setColor(color)
@@ -218,8 +228,23 @@ client.on('message', message => {
         {name: prefix+"ping", value: "Gets daBot's Ping to Discord Servers!"})
         .setURL("https://discord.gg/arg58rFJ8m");
       message.channel.send(embed);
+
+  } else if (message.content.startsWith(prefix+"spam")) {
+    if (message.member.hasPermissions("MANAGE_MESSAGES")){
+      for (i = 0; i <= repeatCount; i++) {
+        message.channel.send(`Spam: ${msg}`);
+      }
+    } else {
+      message.reply("Invalid Permissions!");
+    }
   } else { }
 });
 
 // Client Login
 client.login(process.env.DISCORD_TOKEN);
+
+// Neevan
+// Redkar
+// is
+// gae
+// lol
