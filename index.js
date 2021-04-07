@@ -12,7 +12,7 @@ app.listen(port);
 // ================= START BOT CODE ===================
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const prefix = "da!";
+var prefix = "da!";
 const color = "#17e825";
 var watching = true;
 var commandCount = 9;
@@ -54,7 +54,12 @@ client.on('ready', () => {
 
 // CLIENT ON MESSAGE
 client.on('message', message => {
-  var embed = new Discord.MessageEmbed();
+  prefixes = JSON.parse(fs.readFileSync("prefixes.json"));
+  if (prefixes[message.guild.id] != null) {
+    prefix = prefixes[message.guild.id];
+  }
+  var embed = new Discord.MessageEmbed()
+  .setColor(color);
 
   function hasNeededPerms(message) {
     var falsePerms = " ";
@@ -106,13 +111,12 @@ client.on('message', message => {
     =======================================================
     */
 
-    if (message.mentions.users.first() && message.guild.member(message.mentions.users.first())) {
+    if (args[1] != null && message.mentions.users.first() && message.guild.member(message.mentions.users.first())) {
       var av = message.mentions.users.first().displayAvatarURL();
     } else {
       var av = message.author.displayAvatarURL();
     }
-      embed.setColor(color)
-      .setImage(av)
+      embed.setImage(av)
       .setDescription(`Profile picture for ${message.author}`)
       .setTitle('Profile Picture');
     message.channel.send(embed);
@@ -135,8 +139,7 @@ client.on('message', message => {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
           member.kick(modReason).then(() => {
-            embed.setColor(color)
-            .setDescription(`**Successfully kicked ${user.tag}!**`)
+            embed.setDescription(`**Successfully kicked ${user.tag}!**`)
             .setFooter(`Command Called by ${message.author.tag}`);
           message.reply(embed);
           });
@@ -159,7 +162,6 @@ client.on('message', message => {
     */
     embed.setTitle("Invite daBot to your Server")
     .addField("Also consider Joining daBot's Support Server!", "https://discord.gg/arg58rFJ8m")
-    .setColor(color)
     .setURL("https://discord.com/api/oauth2/authorize?client_id=824186494385520691&permissions=8&scope=bot")
     .setFooter("daBot made by AnxietySucks#2863");
 
@@ -181,8 +183,7 @@ client.on('message', message => {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
           member.ban(modReason).then(() => {
-            embed.setColor(color)
-            .setDescription(`**Successfully banned ${user.tag}!**`)
+            embed.setDescription(`**Successfully banned ${user.tag}!**`)
             .setFooter(`Command Called by ${message.author.tag}`);
           message.reply(embed);
         });
@@ -209,8 +210,7 @@ client.on('message', message => {
       coinResult = "Tails!";
     }
     // Embedded Result
-      embed.setColor(color)
-      .setTitle("Coin Flip")
+      embed.setTitle("Coin Flip")
       .addField("Result:", "It's **" + coinResult + "**!")
       .setFooter("use '?coinflip' to do a coin flip in the future!");
     message.reply(embed);
@@ -227,8 +227,7 @@ client.on('message', message => {
     } catch (err) {
       message.reply("There was an error deleting the message");
     }
-    embed.setColor(color)
-    .setTitle("Hidden Author")
+    embed.setTitle("Hidden Author")
     .addField("Message:", args[1], true);
   message.channel.send(embed).catch();
 
@@ -248,7 +247,6 @@ client.on('message', message => {
 
   } else if (message.content.startsWith(prefix+"help")) {
     embed.setTitle("Support Server")
-    .setColor(color)
     .setFooter("daBot made by AnxietySucks#2863")
     .addFields(
       {name: prefix+"help", value: "List of Commands"},
@@ -275,8 +273,7 @@ client.on('message', message => {
     if (hasNeededPerms(message) == "") {
       message.channel.send("https://tenor.com/view/19dollar-fortnite-card-among-us-amogus-sus-red-among-sus-gif-20549014");
     } else {
-      embed.setColor(color)
-      .setTitle("Missing Perms!")
+      embed.setTitle("Missing Perms!")
       .setDescription(hasNeededPerms(message));
       message.channel.send(embed);
     }
@@ -297,6 +294,23 @@ client.on('message', message => {
       {name: "Release Date", value: changelog[temp].date}
     );
     message.channel.send(embed);
+  } else if (message.content.startsWith(prefix+"prefix")) {
+    if (args[1] != null && message.author.hasPermission("MANAGE_SERVER")) {
+      prefixes[message.guild.id] = args[1]
+      fs.writeFileSync('prefixes.json', JSON.stringify(prefixes));
+      prefixes = JSON.parse(readFileSync('prefixes.json'));
+      if (prefixes[message.guild.id] == args[1]) {
+        embed.setTitle("Success!")
+        .setDescription("Set daBot's prefix to " + args[1]);
+      } else {
+        embed.setTitle("Error!")
+        embed.setDescription("There was an error changing daBot's prefix!");
+      }
+    } else {
+      embed.setTitle("Current Prefix")
+      .setDescription(`The current prefix for daBot is '${prefix}'`);
+    }
+    message.channel.send(embed)
   } else {}
 });
 
