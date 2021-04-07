@@ -1,10 +1,11 @@
 //  ================== APP START =====================
 const express = require('express');
 const app = express();
+const fs = require('fs');
 const port = 3000;
-const botVersion = 1.1;
+const botVersion = 1.11;
 
-app.get('/', (req, res) => res.send(`{"Name": "daBot", "Version": ${botVersion}}`));
+app.get('/', (req, res) => res.send(`daBot v${botVersion} successfully deployed!`));
 app.listen(port);
 
 
@@ -15,6 +16,7 @@ const prefix = "da!";
 const color = "#17e825";
 var watching = true;
 var commandCount = 9;
+
 
 function updateStatus() {
   if (watching) {
@@ -52,6 +54,43 @@ client.on('ready', () => {
 
 // CLIENT ON MESSAGE
 client.on('message', message => {
+  var embed = new Discord.MessageEmbed();
+
+  function hasNeededPerms(message) {
+    var falsePerms = " ";
+    var neededPerms = [
+      "CREATE_INSTANT_INVITE",
+      "KICK_MEMBERS",
+      "BAN_MEMBERS",
+      "MANAGE_CHANNELS",
+      "MANAGE_GUILD",
+      "ADD_REACTIONS",
+      "VIEW_AUDIT_LOG",
+      "STREAM",
+      "VIEW_CHANNEL",
+      "SEND_MESSAGES",
+      "MANAGE_MESSAGES",
+      "EMBED_LINKS",
+      "ATTACH_FILES",
+      "READ_MESSAGE_HISTORY",
+      "MENTION_EVERYONE",
+      "CONNECT",
+      "SPEAK",
+      "MUTE_MEMBERS",
+      "DEAFEN_MEMBERS",
+      "CHANGE_NICKNAME",
+      "MANAGE_NICKNAMES",
+      "MANAGE_ROLES",
+      "MANAGE_WEBHOOKS"
+    ]
+    for (i = 0; i <= neededPerms.length; i++) {
+      if (!message.guild.me.hasPermission(neededPerms[i])) {
+        falsePerms += neededPerms[i] + ", ";
+      }
+    }
+  return(falsePerms);
+}
+
   // SYNTAX HANDLER
   const args = message.content.slice(prefix.length).trim().split(' ');
 
@@ -72,9 +111,9 @@ client.on('message', message => {
     } else {
       var av = message.author.displayAvatarURL();
     }
-    const embed = new Discord.MessageEmbed()
-      .setColor(color)
+      embed.setColor(color)
       .setImage(av)
+      .setDescription(`Profile picture for ${message.author}`)
       .setTitle('Profile Picture');
     message.channel.send(embed);
 
@@ -96,11 +135,10 @@ client.on('message', message => {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
           member.kick(modReason).then(() => {
-            const embed = new Discord.MessageEmbed()
-              .setColor(color)
-              .setDescription(`**Successfully kicked ${user.tag}!**`)
-              .setFooter(`Command Called by ${message.author.tag}`);
-            message.reply(embed);
+            embed.setColor(color)
+            .setDescription(`**Successfully kicked ${user.tag}!**`)
+            .setFooter(`Command Called by ${message.author.tag}`);
+          message.reply(embed);
           });
         } else {
           message.reply("Invalid User Stated!");
@@ -119,12 +157,11 @@ client.on('message', message => {
       Shows invite URL for daBot
     ========================================================
     */
-    const embed = new Discord.MessageEmbed()
-      .setTitle("Invite daBot to your Server")
-      .addField("Also consider Joining daBot's Support Server!", "https://discord.gg/arg58rFJ8m")
-      .setColor(color)
-      .setURL("https://discord.com/api/oauth2/authorize?client_id=824186494385520691&permissions=8&scope=bot")
-      .setFooter("daBot made by AnxietySucks#2863");
+    embed.setTitle("Invite daBot to your Server")
+    .addField("Also consider Joining daBot's Support Server!", "https://discord.gg/arg58rFJ8m")
+    .setColor(color)
+    .setURL("https://discord.com/api/oauth2/authorize?client_id=824186494385520691&permissions=8&scope=bot")
+    .setFooter("daBot made by AnxietySucks#2863");
 
     message.reply(embed);
   } else if (message.content.startsWith(prefix + "ban")) {
@@ -144,12 +181,11 @@ client.on('message', message => {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
           member.ban(modReason).then(() => {
-            const embed = new Discord.MessageEmbed()
-              .setColor(color)
-              .setDescription(`**Successfully banned ${user.tag}!**`)
-              .setFooter(`Command Called by ${message.author.tag}`);
-            message.reply(embed);
-          });
+            embed.setColor(color)
+            .setDescription(`**Successfully banned ${user.tag}!**`)
+            .setFooter(`Command Called by ${message.author.tag}`);
+          message.reply(embed);
+        });
         } else {
           message.reply("Invalid User Stated!");
         }
@@ -173,8 +209,7 @@ client.on('message', message => {
       coinResult = "Tails!";
     }
     // Embedded Result
-    const embed = new Discord.MessageEmbed()
-      .setColor(color)
+      embed.setColor(color)
       .setTitle("Coin Flip")
       .addField("Result:", "It's **" + coinResult + "**!")
       .setFooter("use '?coinflip' to do a coin flip in the future!");
@@ -192,11 +227,10 @@ client.on('message', message => {
     } catch (err) {
       message.reply("There was an error deleting the message");
     }
-    const embed = new Discord.MessageEmbed()
-      .setColor(color)
-      .setTitle("Hidden Author")
-      .addField("Message:", args[1], true);
-    message.channel.send(embed).catch();
+    embed.setColor(color)
+    .setTitle("Hidden Author")
+    .addField("Message:", args[1], true);
+  message.channel.send(embed).catch();
 
     /*
     =======================================================
@@ -213,20 +247,20 @@ client.on('message', message => {
     */
 
   } else if (message.content.startsWith(prefix+"help")) {
-
-    embed = new Discord.MessageEmbed()
-      .setTitle("Support Server")
-      .setColor(color)
-      .setFooter("daBot made by AnxietySucks#2863")
-      .addFields(
-        {name: prefix+"help", value: "List of Commands"},
-        {name: prefix+"av", value: "Shows User PFP, if user is mentioned, shows their PFP"},
-        {name: prefix+"coinflip", value: "Flips a Virtual Coin that results in Heads or Tails!"},
-        {name: prefix+"kick", value: "Kicks Mentioned user from the Server"},
-        {name: prefix+"ban", value: "Bans Mentioned user from the Server"},
-        {name: prefix+"hide", value: "Sends Message with bot, then deletes the command message"},
-        {name: prefix+"ping", value: "Gets daBot's Ping to Discord Servers!"})
-        .setURL("https://discord.gg/arg58rFJ8m");
+    embed.setTitle("Support Server")
+    .setColor(color)
+    .setFooter("daBot made by AnxietySucks#2863")
+    .addFields(
+      {name: prefix+"help", value: "List of Commands"},
+      {name: prefix+"av", value: "Shows User PFP, if user is mentioned, shows their PFP"},
+      {name: prefix+"coinflip", value: "Flips a Virtual Coin that results in Heads or Tails!"},
+      {name: prefix+"kick", value: "Kicks Mentioned user from the Server"},
+      {name: prefix+"ban", value: "Bans Mentioned user from the Server"},
+      {name: prefix+"hide", value: "Sends Message with bot, then deletes the command message"},
+      {name: prefix+"ping", value: "Gets daBot's Ping to Discord Servers!"},
+      {name: prefix+"mogus", value: "MOGUS GANG"},
+      {name: prefix+"checkperms", value: "Check to see if bot has reccommended permissions"})
+      .setURL("https://discord.gg/arg58rFJ8m");
       message.channel.send(embed);
 
   } else if (message.content.startsWith(prefix+"spam")) {
@@ -237,14 +271,48 @@ client.on('message', message => {
     } else {
       message.reply("Invalid Permissions!");
     }
-  } else { }
+  } else if (message.content.startsWith(prefix+"mogus")) {
+    if (hasNeededPerms(message) == "") {
+      message.channel.send("https://tenor.com/view/19dollar-fortnite-card-among-us-amogus-sus-red-among-sus-gif-20549014");
+    } else {
+      embed.setColor(color)
+      .setTitle("Missing Perms!")
+      .setDescription(hasNeededPerms(message));
+      message.channel.send(embed);
+    }
+  } else if (message.content.startsWith(prefix+"changelog")) {
+    var embed = new Discord.MessageEmbed();
+    let data = fs.readFileSync("changelog.json");
+    var changelog = JSON.parse(data);
+
+    if (args[1] == "null" || isNaN(args[1])) {
+      var temp = botVersion;
+    } else {
+      var temp = args[1]
+    }
+    embed.setColor(color)
+    .setTitle("Changelog for v" + temp)
+    .addFields(
+      {name: "Changes", value: changelog[temp].changes},
+      {name: "Release Date", value: changelog[temp].date}
+    );
+    message.channel.send(embed);
+  } else {}
 });
 
 // Client Login
 client.login(process.env.DISCORD_TOKEN);
 
+// I
+// Think
+// that
 // Neevan
 // Redkar
 // is
-// gae
+// probably
+// simping
+// on
+// for
+// Logan
+// Wilkins
 // lol

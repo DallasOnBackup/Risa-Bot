@@ -1,0 +1,14 @@
+{
+  "1": {
+    "date": "March 24th, 2021",
+    "changes": "Initial Release"
+  },
+  "1.1": {
+    "date": "March 30th, 2021",
+    "changes": "Added more Commands, including help!"
+  },
+  "1.11": {
+    "date": "April 7th, 2021",
+    "changes": "Added Changelogs"
+  }
+}
