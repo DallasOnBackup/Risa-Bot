@@ -257,9 +257,18 @@ client.on('message', message => {
       {name: prefix+"hide", value: "Sends Message with bot, then deletes the command message"},
       {name: prefix+"ping", value: "Gets daBot's Ping to Discord Servers!"},
       {name: prefix+"mogus", value: "MOGUS GANG"},
-      {name: prefix+"checkperms", value: "Check to see if bot has reccommended permissions"})
+      {name: prefix+"checkperms", value: "Check to see if bot has reccommended permissions"},
+      {name: prefix+"changelog", value: "Shows changelogs for specified version"},
+      {name: prefix+"prefix", value: "Changes bot prefix to specified Prefix (Max length is 4"}
+      )
       .setURL("https://discord.gg/arg58rFJ8m");
       message.channel.send(embed);
+
+    /*
+    =======================================================
+      SPAMMMMMMMMMMMMMMMMMMMMMmm
+    =======================================================
+    */
 
   } else if (message.content.startsWith(prefix+"spam")) {
     if (message.member.hasPermissions("MANAGE_MESSAGES")){
@@ -269,6 +278,13 @@ client.on('message', message => {
     } else {
       message.reply("Invalid Permissions!");
     }
+
+    /*
+    =======================================================
+      MOGUS GANG
+    =======================================================
+    */
+
   } else if (message.content.startsWith(prefix+"mogus")) {
     if (hasNeededPerms(message) == "") {
       message.channel.send("https://tenor.com/view/19dollar-fortnite-card-among-us-amogus-sus-red-among-sus-gif-20549014");
@@ -277,6 +293,13 @@ client.on('message', message => {
       .setDescription(hasNeededPerms(message));
       message.channel.send(embed);
     }
+
+    /*
+    =======================================================
+      Shows Changelogs to specified/current bot version
+    =======================================================
+    */
+
   } else if (message.content.startsWith(prefix+"changelog")) {
     var embed = new Discord.MessageEmbed();
     let data = fs.readFileSync("changelog.json");
@@ -294,23 +317,40 @@ client.on('message', message => {
       {name: "Release Date", value: changelog[temp].date}
     );
     message.channel.send(embed);
+
+    /*
+    =======================================================
+      Changes bot prefix
+    =======================================================
+    */
+
   } else if (message.content.startsWith(prefix+"prefix")) {
-    if (args[1] != null && message.author.hasPermission("MANAGE_SERVER")) {
-      prefixes[message.guild.id] = args[1]
-      fs.writeFileSync('prefixes.json', JSON.stringify(prefixes));
-      prefixes = JSON.parse(readFileSync('prefixes.json'));
-      if (prefixes[message.guild.id] == args[1]) {
-        embed.setTitle("Success!")
-        .setDescription("Set daBot's prefix to " + args[1]);
+        if (args[1] != null) {
+          if (args[1].length >= 5) {
+            embed.setTitle("Error!")
+            .setDescription(`Maximum prefix length is 4,your prefix length was ${args[1].length}!`);
+          } else {
+            if (message.member.hasPermission("MANAGE_GUILD")) {
+              prefixes[message.guild.id] = args[1];
+              fs.writeFileSync('prefixes.json', JSON.stringify(prefixes));
+              prefixes = JSON.parse(readFileSync('prefixes.json'));
+              if (prefixes[message.guild.id] == args[1]) {
+                embed.setTitle("Success!")
+                .setDescription("Set daBot's prefix to " + args[1]);
+              } else {
+                embed.setTitle("Error!")
+                .setDescription("There was an error changing daBot's prefix!");
+              }
+          } else {
+            embed.setTitle("Invalid Perms!")
+            embed.setDescription(`${message.author}, You are missing the following permissions: \`MANAGE_SERVER\``);
+          }
+        }
       } else {
-        embed.setTitle("Error!")
-        embed.setDescription("There was an error changing daBot's prefix!");
+        embed.setTitle("Current Prefix")
+        .setDescription(`The current prefix for daBot is '${prefix}'`);
       }
-    } else {
-      embed.setTitle("Current Prefix")
-      .setDescription(`The current prefix for daBot is '${prefix}'`);
-    }
-    message.channel.send(embed)
+    message.channel.send(embed);
   } else {}
 });
 
@@ -325,7 +365,6 @@ client.login(process.env.DISCORD_TOKEN);
 // is
 // probably
 // simping
-// on
 // for
 // Logan
 // Wilkins
