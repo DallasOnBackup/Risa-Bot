@@ -54,6 +54,8 @@ client.on('ready', () => {
 
 // CLIENT ON MESSAGE
 client.on('message', message => {
+  if (!message.guild == null) {
+
   prefixes = JSON.parse(fs.readFileSync("./guildData/prefixes.json"));
   if (prefixes[message.guild.id] != null) {
     prefix = prefixes[message.guild.id];
@@ -362,7 +364,7 @@ client.on('message', message => {
 
     message.channel.send(dedChat[Math.floor(Math.random()*dedChat.length)]);
   } else {}
-});
+}});
 
 // Client Login
 client.login(process.env.DISCORD_TOKEN);
