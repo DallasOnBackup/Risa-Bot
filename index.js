@@ -54,7 +54,7 @@ client.on('ready', () => {
 
 // CLIENT ON MESSAGE
 client.on('message', message => {
-  prefixes = JSON.parse(fs.readFileSync("prefixes.json"));
+  prefixes = JSON.parse(fs.readFileSync("./guildData/prefixes.json"));
   if (prefixes[message.guild.id] != null) {
     prefix = prefixes[message.guild.id];
   }
@@ -259,10 +259,17 @@ client.on('message', message => {
       {name: prefix+"mogus", value: "MOGUS GANG"},
       {name: prefix+"checkperms", value: "Check to see if bot has reccommended permissions"},
       {name: prefix+"changelog", value: "Shows changelogs for specified version"},
-      {name: prefix+"prefix", value: "Changes bot prefix to specified Prefix (Max length is 4"}
+      {name: prefix+"prefix", value: "Changes bot prefix to specified Prefix (Max length is 4"},
+      {name: prefix+"deadchat", value: "DED CHAT XD"}
       )
       .setURL("https://discord.gg/arg58rFJ8m");
-      message.channel.send(embed);
+
+      var embedReply = new Discord.MessageEmbed()
+      .setColor(color)
+      .setDescription("There should be a DM waiting in your inbox with the command list and Support Info!");
+
+      message.channel.send(embedReply)
+      message.author.send(embed);
 
     /*
     =======================================================
@@ -286,13 +293,7 @@ client.on('message', message => {
     */
 
   } else if (message.content.startsWith(prefix+"mogus")) {
-    if (hasNeededPerms(message) == "") {
-      message.channel.send("https://tenor.com/view/19dollar-fortnite-card-among-us-amogus-sus-red-among-sus-gif-20549014");
-    } else {
-      embed.setTitle("Missing Perms!")
-      .setDescription(hasNeededPerms(message));
-      message.channel.send(embed);
-    }
+    message.channel.send("https://tenor.com/view/19dollar-fortnite-card-among-us-amogus-sus-red-among-sus-gif-20549014");
 
     /*
     =======================================================
@@ -332,8 +333,8 @@ client.on('message', message => {
           } else {
             if (message.member.hasPermission("MANAGE_GUILD")) {
               prefixes[message.guild.id] = args[1];
-              fs.writeFileSync('prefixes.json', JSON.stringify(prefixes));
-              prefixes = JSON.parse(readFileSync('prefixes.json'));
+              fs.writeFileSync('./guildData/prefixes.json', JSON.stringify(prefixes));
+              prefixes = JSON.parse(readFileSync('./guildData/prefixes.json'));
               if (prefixes[message.guild.id] == args[1]) {
                 embed.setTitle("Success!")
                 .setDescription("Set daBot's prefix to " + args[1]);
@@ -351,6 +352,15 @@ client.on('message', message => {
         .setDescription(`The current prefix for daBot is '${prefix}'`);
       }
     message.channel.send(embed);
+  } else if (message.content.startsWith(prefix+"deadchat")) {
+    var dedChat = [
+      "https://media.tenor.com/images/af499284aad043f21256d82d76dd2ff3/tenor.gif",
+      "https://media.tenor.com/images/2868b663a9fa1c32c9092438576461d3/tenor.gif",
+      "https://media.tenor.com/images/b9f1e02945b47885df3e319ba02329c7/tenor.gif",
+      "https://media.tenor.com/images/0e3618e9958cd64bf6a6716d18291fa0/tenor.gif"
+    ];
+
+    message.channel.send(dedChat[Math.floor(Math.random()*dedChat.length)]);
   } else {}
 });
 
