@@ -3,16 +3,16 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const port = 3000;
-const botVersion = 1.11;
+const botVersion = 1.2;
 
-app.get('/', (req, res) => res.send(`daBot v${botVersion} successfully deployed!`));
+app.get('/', (req, res) => res.send(`Risa v${botVersion} successfully deployed!`));
 app.listen(port);
 
 
 // ================= START BOT CODE ===================
 const Discord = require('discord.js');
 const client = new Discord.Client();
-var prefix = "da!";
+var prefix = "risa!";
 const color = "#17e825";
 var watching = true;
 var commandCount = 9;
@@ -54,12 +54,17 @@ client.on('ready', () => {
 
 // CLIENT ON MESSAGE
 client.on('message', message => {
-  if (!message.guild == null) {
+  const args = message.content.slice(prefix.length).trim().split(' ');
+
+  if (message.guild != null) {
 
   prefixes = JSON.parse(fs.readFileSync("./guildData/prefixes.json"));
   if (prefixes[message.guild.id] != null) {
     prefix = prefixes[message.guild.id];
   }
+
+  var command = message.content.split(' ')[0].toLowerCase();
+  
   var embed = new Discord.MessageEmbed()
   .setColor(color);
 
@@ -99,39 +104,23 @@ client.on('message', message => {
 }
 
   // SYNTAX HANDLER
-  const args = message.content.slice(prefix.length).trim().split(' ');
 
-  if (args[args.length] == "--delete") {
+  if (message.content.endsWith("--delete")) {
     message.delete();
   }
 
-  if (message.content.startsWith(prefix + "av")) {
-
-    /*
-    =======================================================
-      Displays avatar of stated user, without stated user gets avatar of Message Author
-    =======================================================
-    */
-
+  if (command == prefix + "av") {
     if (args[1] != null && message.mentions.users.first() && message.guild.member(message.mentions.users.first())) {
       var av = message.mentions.users.first().displayAvatarURL();
     } else {
       var av = message.author.displayAvatarURL();
     }
       embed.setImage(av)
-      .setDescription(`Profile picture for ${message.author}`)
-      .setTitle('Profile Picture');
+      .setFooter("");
     message.channel.send(embed);
 
 
-  } else if (message.content.startsWith(prefix + "kick")) {
-
-    /*
-    ========================================================
-      Kicks user from server if stated, otherwise produces an error
-    ========================================================
-    */
-
+  } else if (command == prefix + "kick") {
     const user = message.mentions.users.first();
 
     if (message.member.hasPermission("KICK_MEMBERS") || message.author.tag == "AnxietySucks#2863") {
@@ -141,8 +130,7 @@ client.on('message', message => {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
           member.kick(modReason).then(() => {
-            embed.setDescription(`**Successfully kicked ${user.tag}!**`)
-            .setFooter(`Command Called by ${message.author.tag}`);
+            embed.setTitle(`**Successfully kicked ${user.tag}!**`)
           message.reply(embed);
           });
         } else {
@@ -155,38 +143,26 @@ client.on('message', message => {
       message.reply("Invalid Permissions!");
     }
 
-  } else if (message.content.startsWith(prefix + "invite")) {
-
-    /*
-    ========================================================
-      Shows invite URL for daBot
-    ========================================================
-    */
-    embed.setTitle("Invite daBot to your Server")
-    .addField("Also consider Joining daBot's Support Server!", "https://discord.gg/arg58rFJ8m")
+  } else if (command == prefix + "invite") {
+    embed.setTitle("Invite Risa to your Server")
+    .addField("Also consider Joining Risa's Support Server!", "https://discord.gg/arg58rFJ8m")
     .setURL("https://discord.com/api/oauth2/authorize?client_id=824186494385520691&permissions=8&scope=bot")
-    .setFooter("daBot made by AnxietySucks#2863");
+    .setFooter("Risa made by AnxietySucks#2863");
 
     message.reply(embed);
-  } else if (message.content.startsWith(prefix + "ban")) {
 
-    /*
-    =======================================================
-    Bans User from server if user mentions, otherwise produces an error
-    =======================================================
-    */
+
+  } else if (command == prefix + "ban") {
     const user = message.mentions.users.first();
 
     if (message.member.hasPermission("BAN_MEMBERS")) {
-      // User is valid and in the guild
       if (user) {
         const member = message.guild.member(user);
         if (member) {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
           member.ban(modReason).then(() => {
-            embed.setDescription(`**Successfully banned ${user.tag}!**`)
-            .setFooter(`Command Called by ${message.author.tag}`);
+            embed.setTitle(`**Successfully banned ${user.tag}!**`)
           message.reply(embed);
         });
         } else {
@@ -199,57 +175,41 @@ client.on('message', message => {
       message.reply("Invalid Permissions!");
     }
 
-    /*
-    =======================================================
-      Flips a Virtual coin and results in either Heads or Tails!
-    =======================================================
-    */
 
-  } else if (message.content.startsWith(prefix + "coinflip")) {
+  } else if (command == prefix + "coinflip") {
     if (Math.floor(Math.random() * 2) == 0) {
       coinResult = "Heads!";
     } else {
       coinResult = "Tails!";
     }
-    // Embedded Result
-      embed.setTitle("Coin Flip")
-      .addField("Result:", "It's **" + coinResult + "**!")
-      .setFooter("use '?coinflip' to do a coin flip in the future!");
+    embed
+      .setTitle(`It's **${coinResult}**!`)
     message.reply(embed);
 
-    /*
-    =======================================================
-      Deletes the User's message, sends it with the bot and deletes the users message
-    =======================================================
-    */
 
-  } else if (message.content.startsWith(prefix + "hide")) {
+  } else if (command == prefix + "hide") {
+    args.shift();
+    msg = args.join(" ");
+
     try {
       message.delete();
     } catch (err) {
       message.reply("There was an error deleting the message");
     }
-    embed.setTitle("Hidden Author")
-    .addField("Message:", args[1], true);
-  message.channel.send(embed).catch();
+    if (args[0] != 0) { 
+      embed
+        .setDescription(msg);
+      message.channel.send(embed).catch();
+    }
 
-    /*
-    =======================================================
-      Gets the Bot's Ping to Discord Servers
-    =======================================================
-    */
 
-  } else if (message.content.startsWith(prefix+"ping")) {
-    message.reply(`daBot has a Ping of ${Date.now() - message.createdTimestamp}ms!`);
-    /*
-    =======================================================
-      Shows List of Commands for daBot
-    =======================================================
-    */
+  } else if (command == prefix + "ping") {
+    embed.setTitle(`Risa has a Ping of ${Date.now() - message.createdTimestamp}ms!`);
+    message.channel.send(embed);
 
-  } else if (message.content.startsWith(prefix+"help")) {
+  } else if (command == prefix + "help") {
     embed.setTitle("Support Server")
-    .setFooter("daBot made by AnxietySucks#2863")
+    .setFooter("RisaBot made by AnxietySucks#2863")
     .addFields(
       {name: prefix+"help", value: "List of Commands"},
       {name: prefix+"av", value: "Shows User PFP, if user is mentioned, shows their PFP"},
@@ -257,7 +217,7 @@ client.on('message', message => {
       {name: prefix+"kick", value: "Kicks Mentioned user from the Server"},
       {name: prefix+"ban", value: "Bans Mentioned user from the Server"},
       {name: prefix+"hide", value: "Sends Message with bot, then deletes the command message"},
-      {name: prefix+"ping", value: "Gets daBot's Ping to Discord Servers!"},
+      {name: prefix+"ping", value: "Gets Risa's Ping to Discord Servers!"},
       {name: prefix+"mogus", value: "MOGUS GANG"},
       {name: prefix+"checkperms", value: "Check to see if bot has reccommended permissions"},
       {name: prefix+"changelog", value: "Shows changelogs for specified version"},
@@ -268,18 +228,13 @@ client.on('message', message => {
 
       var embedReply = new Discord.MessageEmbed()
       .setColor(color)
-      .setDescription("There should be a DM waiting in your inbox with the command list and Support Info!");
+      .setTitle("There should be a DM waiting in your inbox with the command list and Support Info!");
 
       message.channel.send(embedReply)
       message.author.send(embed);
 
-    /*
-    =======================================================
-      SPAMMMMMMMMMMMMMMMMMMMMMmm
-    =======================================================
-    */
 
-  } else if (message.content.startsWith(prefix+"spam")) {
+  } else if (command == prefix + "spam") {
     if (message.member.hasPermissions("MANAGE_MESSAGES")){
       for (i = 0; i <= repeatCount; i++) {
         message.channel.send(`Spam: ${msg}`);
@@ -288,22 +243,12 @@ client.on('message', message => {
       message.reply("Invalid Permissions!");
     }
 
-    /*
-    =======================================================
-      MOGUS GANG
-    =======================================================
-    */
 
-  } else if (message.content.startsWith(prefix+"mogus")) {
+  } else if (command == prefix + "mogus") {
     message.channel.send("https://tenor.com/view/19dollar-fortnite-card-among-us-amogus-sus-red-among-sus-gif-20549014");
 
-    /*
-    =======================================================
-      Shows Changelogs to specified/current bot version
-    =======================================================
-    */
 
-  } else if (message.content.startsWith(prefix+"changelog")) {
+  } else if (command == prefix + "changelog") {
     var embed = new Discord.MessageEmbed();
     let data = fs.readFileSync("changelog.json");
     var changelog = JSON.parse(data);
@@ -321,14 +266,10 @@ client.on('message', message => {
     );
     message.channel.send(embed);
 
-    /*
-    =======================================================
-      Changes bot prefix
-    =======================================================
-    */
 
-  } else if (message.content.startsWith(prefix+"prefix")) {
+  } else if (command == prefix + "prefix") {
         if (args[1] != null) {
+          if (args)
           if (args[1].length >= 5) {
             embed.setTitle("Error!")
             .setDescription(`Maximum prefix length is 4,your prefix length was ${args[1].length}!`);
@@ -338,11 +279,9 @@ client.on('message', message => {
               fs.writeFileSync('./guildData/prefixes.json', JSON.stringify(prefixes));
               prefixes = JSON.parse(readFileSync('./guildData/prefixes.json'));
               if (prefixes[message.guild.id] == args[1]) {
-                embed.setTitle("Success!")
-                .setDescription("Set daBot's prefix to " + args[1]);
+                embed.setTitle("Set Risa's prefix to " + args[1]);
               } else {
-                embed.setTitle("Error!")
-                .setDescription("There was an error changing daBot's prefix!");
+                embed.setTitle("There was an ***error*** changing Risa's prefix!");
               }
           } else {
             embed.setTitle("Invalid Perms!")
@@ -350,11 +289,10 @@ client.on('message', message => {
           }
         }
       } else {
-        embed.setTitle("Current Prefix")
-        .setDescription(`The current prefix for daBot is '${prefix}'`);
+        embed.setTitle(`The current prefix for Risa is '${prefix}'`);
       }
     message.channel.send(embed);
-  } else if (message.content.startsWith(prefix+"deadchat")) {
+  } else if (command == prefix + "deadchat") {
     var dedChat = [
       "https://media.tenor.com/images/af499284aad043f21256d82d76dd2ff3/tenor.gif",
       "https://media.tenor.com/images/2868b663a9fa1c32c9092438576461d3/tenor.gif",
@@ -363,21 +301,15 @@ client.on('message', message => {
     ];
 
     message.channel.send(dedChat[Math.floor(Math.random()*dedChat.length)]);
+  } else if (command == prefix + "checkperms") {
+    if (hasNeededPerms(message) == " ") {
+      embed.setDescription("All reccommended permissions are met!");
+    } else {
+      embed.setDescription(`Some of the following permissions are not granted: \`${hasNeededPerms(message)}\``);
+    }
+    message.channel.send(embed);
   } else {}
 }});
 
 // Client Login
 client.login(process.env.DISCORD_TOKEN);
-
-// I
-// Think
-// that
-// Neevan
-// Redkar
-// is
-// probably
-// simping
-// for
-// Logan
-// Wilkins
-// lol

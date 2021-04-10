@@ -10,5 +10,13 @@
   "1.11": {
     "date": "April 7th, 2021",
     "changes": "Added Changelogs Commands and Custom Prefixes!"
+  },
+  "1.12": {
+    "date": "April 9th 2021",
+    "changes": "Added dead chat and checkperms commands, Help command now sense help info to DMs, fixed bugs"
+  },
+  "1.2": {
+    "date": "April 10th 2021",
+    "changes": "Numerous bug fixes, UI Improvements, fixed hide command"
   }
 }
