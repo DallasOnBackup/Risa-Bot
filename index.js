@@ -15,7 +15,7 @@ const client = new Discord.Client();
 var prefix = "risa!";
 const color = "#17e825";
 var watching = true;
-var commandCount = 9;
+var commandCount = 12;
 
 
 function updateStatus() {
@@ -232,17 +232,6 @@ client.on('message', message => {
 
       message.channel.send(embedReply)
       message.author.send(embed);
-
-
-  } else if (command == prefix + "spam") {
-    if (message.member.hasPermissions("MANAGE_MESSAGES")){
-      for (i = 0; i <= repeatCount; i++) {
-        message.channel.send(`Spam: ${msg}`);
-      }
-    } else {
-      message.reply("Invalid Permissions!");
-    }
-
 
   } else if (command == prefix + "mogus") {
     message.channel.send("https://tenor.com/view/19dollar-fortnite-card-among-us-amogus-sus-red-among-sus-gif-20549014");
