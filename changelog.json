@@ -18,5 +18,9 @@
   "1.2": {
     "date": "April 10th 2021",
     "changes": "Introducing Risa! Numerous bug fixes, UI Improvements, fixed hide command"
+  },
+  "1.21": {
+    "date": "April 11th 2021",
+    "changes": "Added Dual Prefixes! (You can now use a custom prefix and 'risa!' at the same time!)"
   }
 }

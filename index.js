@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const port = 3000;
-const botVersion = 1.2;
+const botVersion = 1.21;
 
 app.get('/', (req, res) => res.send(`Risa v${botVersion} successfully deployed!`));
 app.listen(port);
@@ -55,6 +55,14 @@ client.on('ready', () => {
 // CLIENT ON MESSAGE
 client.on('message', message => {
   const args = message.content.slice(prefix.length).trim().split(' ');
+
+  function commandParse(a) {
+    if (command == prefix + a || command == "risa!" + a) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   if (message.guild != null) {
 
@@ -109,18 +117,17 @@ client.on('message', message => {
     message.delete();
   }
 
-  if (command == prefix + "av") {
+  if (commandParse("av")) {
     if (args[1] != null && message.mentions.users.first() && message.guild.member(message.mentions.users.first())) {
       var av = message.mentions.users.first().displayAvatarURL();
     } else {
       var av = message.author.displayAvatarURL();
     }
-      embed.setImage(av)
-      .setFooter("");
+      embed.setImage(av);
     message.channel.send(embed);
 
 
-  } else if (command == prefix + "kick") {
+  } else if (commandParse("kick")) {
     const user = message.mentions.users.first();
 
     if (message.member.hasPermission("KICK_MEMBERS") || message.author.tag == "AnxietySucks#2863") {
@@ -129,7 +136,7 @@ client.on('message', message => {
         if (member) {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
-          member.kick(modReason).then(() => {
+          member.kick(modReason).catch(err).then(() => {
             embed.setTitle(`**Successfully kicked ${user.tag}!**`)
           message.reply(embed);
           });
@@ -143,7 +150,7 @@ client.on('message', message => {
       message.reply("Invalid Permissions!");
     }
 
-  } else if (command == prefix + "invite") {
+  } else if (commandParse("invite")) {
     embed.setTitle("Invite Risa to your Server")
     .addField("Also consider Joining Risa's Support Server!", "https://discord.gg/arg58rFJ8m")
     .setURL("https://discord.com/api/oauth2/authorize?client_id=824186494385520691&permissions=8&scope=bot")
@@ -152,7 +159,7 @@ client.on('message', message => {
     message.reply(embed);
 
 
-  } else if (command == prefix + "ban") {
+  } else if (commandParse("ban")) {
     const user = message.mentions.users.first();
 
     if (message.member.hasPermission("BAN_MEMBERS")) {
@@ -161,7 +168,7 @@ client.on('message', message => {
         if (member) {
           modArgs = args.splice(0, 2);
           modReason = modArgs.join(" ");
-          member.ban(modReason).then(() => {
+          member.ban(modReason).catch(err).then(() => {
             embed.setTitle(`**Successfully banned ${user.tag}!**`)
           message.reply(embed);
         });
@@ -176,7 +183,7 @@ client.on('message', message => {
     }
 
 
-  } else if (command == prefix + "coinflip") {
+  } else if (commandParse("coinflip")) {
     if (Math.floor(Math.random() * 2) == 0) {
       coinResult = "Heads!";
     } else {
@@ -187,7 +194,7 @@ client.on('message', message => {
     message.reply(embed);
 
 
-  } else if (command == prefix + "hide") {
+  } else if (commandParse("hide")) {
     args.shift();
     msg = args.join(" ");
 
@@ -203,11 +210,11 @@ client.on('message', message => {
     }
 
 
-  } else if (command == prefix + "ping") {
+  } else if (commandParse("ping")) {
     embed.setTitle(`Risa has a Ping of ${Date.now() - message.createdTimestamp}ms!`);
     message.channel.send(embed);
 
-  } else if (command == prefix + "help") {
+  } else if (commandParse("help")) {
     embed.setTitle("Support Server")
     .setFooter("RisaBot made by AnxietySucks#2863")
     .addFields(
@@ -222,7 +229,8 @@ client.on('message', message => {
       {name: prefix+"checkperms", value: "Check to see if bot has reccommended permissions"},
       {name: prefix+"changelog", value: "Shows changelogs for specified version"},
       {name: prefix+"prefix", value: "Changes bot prefix to specified Prefix (Max length is 4"},
-      {name: prefix+"deadchat", value: "DED CHAT XD"}
+      {name: prefix+"deadchat", value: "DED CHAT XD"},
+      {name: prefix+"test OR risa!test", value: "Returns the Bot's ping including other info!"}
       )
       .setURL("https://discord.gg/arg58rFJ8m");
 
@@ -233,19 +241,22 @@ client.on('message', message => {
       message.channel.send(embedReply)
       message.author.send(embed);
 
-  } else if (command == prefix + "mogus") {
+  } else if (commandParse("mogus")) {
     message.channel.send("https://tenor.com/view/19dollar-fortnite-card-among-us-amogus-sus-red-among-sus-gif-20549014");
 
 
-  } else if (command == prefix + "changelog") {
+  } else if (commandParse("changelog")) {
     var embed = new Discord.MessageEmbed();
     let data = fs.readFileSync("changelog.json");
     var changelog = JSON.parse(data);
-
     if (args[1] == "null" || isNaN(args[1])) {
       var temp = botVersion;
     } else {
       var temp = args[1]
+    }
+    if (changelog[temp] == null) {
+      embed.setFooter("Risa detected a Non-Existent Version Number, So this is the latest info!");
+      temp = botVersion;
     }
     embed.setColor(color)
     .setTitle("Changelog for v" + temp)
@@ -255,8 +266,7 @@ client.on('message', message => {
     );
     message.channel.send(embed);
 
-
-  } else if (command == prefix + "prefix") {
+  } else if (commandParse("prefix")) {
         if (args[1] != null) {
           if (args)
           if (args[1].length >= 5) {
@@ -281,7 +291,7 @@ client.on('message', message => {
         embed.setTitle(`The current prefix for Risa is '${prefix}'`);
       }
     message.channel.send(embed);
-  } else if (command == prefix + "deadchat") {
+  } else if (commandParse("deadchat")) {
     var dedChat = [
       "https://media.tenor.com/images/af499284aad043f21256d82d76dd2ff3/tenor.gif",
       "https://media.tenor.com/images/2868b663a9fa1c32c9092438576461d3/tenor.gif",
@@ -290,12 +300,16 @@ client.on('message', message => {
     ];
 
     message.channel.send(dedChat[Math.floor(Math.random()*dedChat.length)]);
-  } else if (command == prefix + "checkperms") {
+  } else if (commandParse("checkperms")) {
     if (hasNeededPerms(message) == " ") {
       embed.setDescription("All reccommended permissions are met!");
     } else {
       embed.setDescription(`Some of the following permissions are not granted: \`${hasNeededPerms(message)}\``);
     }
+    message.channel.send(embed);
+  } else if (commandParse("test")) {
+    embed.addField("Ping:",`\`${Date.now() - message.createdTimestamp}ms\``)
+    .setDescription("Risa is Currently Online and Operating on Risa v" + botVersion + "!");
     message.channel.send(embed);
   } else {}
 }});
