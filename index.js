@@ -1,15 +1,15 @@
 //  ================== APP START =====================
 
-// Basic Package Import/Setup
+// Package Import/Setup
 const express = require('express')
 const app = express()
 const fs = require('fs')
 const Discord = require('discord.js')
-const Database = require("@replit/database")
-const db = new Database()
 const client = new Discord.Client()
+client.config = {}
+client.config.color = "#FFFFFF"
 const port = 3000
-const botVersion = 0
+const botVersion = 1
 var prefix = "risa!"
 
 // Server Listening
@@ -19,32 +19,49 @@ app.listen(port)
 // Client Login
 client.login(process.env.DISCORD_TOKEN)
 
+// Main Bot Code
+client.on('message', async message => {
+  /*
+  if (db.get(message.guild.id) != null) {
+    client.config.prefix = db.get(message.guild.id)
+  } else {
+    client.config.prefix = prefix
+  }
+  */
+})
+
 // When bot is Ready, Log to Console
 client.on('ready', () => {
+  client.config.prefix = prefix
   console.log(`Successfully logged into Risa as ${client.user.tag}!`)
   client.user.setPresence({
     status: 'idle',
       activity: {
-        name: `with a Broken Bot`,
-        type: "PLAYING"
+        name: `an Idiot rebuild a broken bot`,
+        type: "WATCHING"
       }
   })
 })
 
-// Main Bot Code
-client.on('message', async message => {
-  var embed = new Discord.MessageEmbed()
-  if (message.content.startsWith(`risa!help`)) {
-    embed.setColor("#FFF")
-    .setAuthor(client.user.tag, "https://cdn.discordapp.com/avatars/824186494385520691/8558cd9cb2b8ed4458353a4749b7757d.png")
-    .setDescription("These are all of the Planned commands for Risa!")
-    .addFields(
-      {name: "Moderation", value: "`ban` | `tempban` | `kick` | `tempkick` | `mute` | `tempmute`"},
-      {name: "Music", value: "`play` | `pause` | `resume` | `stop` | `leave` | `skip` | `queue` | `remove`"},
-      {name: "Bot", value: "`ping` | `owner` | `about` | `help` | `invite`"},
-      {name: "Utility", value: "`coinflip` | `timer` | `urban`"}
-    )
-    .setFooter("NOTICE: THESE COMMANDS ARE PLANNED, NONE OF THEM ACTUALLY CURRENTLY WORK!")
-    message.channel.send(embed)
-  }
-})
+// Command Import
+fs.readdir('./events/', (err, files) => {
+	if (err) return console.error(err);
+	files.forEach(file => {
+		const event = require(`./events/${file}`);
+		let eventName = file.split('.')[0];
+		client.on(eventName, event.bind(null, client));
+	});
+});
+
+client.commands = new Discord.Collection();
+
+fs.readdir('./commands/', (err, files) => {
+	if (err) return console.error(err);
+	files.forEach(file => {
+		if (!file.endsWith('.js')) return;
+		let props = require(`./commands/${file}`);
+		let commandName = file.split('.')[0];
+		console.log(`'${commandName}.js' Ready`);
+		client.commands.set(commandName, props);
+	});
+});
