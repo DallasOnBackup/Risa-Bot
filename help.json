@@ -1,0 +1,9 @@
+{
+  "av": "Displays the Avatar of the mentioned user. If no user is mentioned, it will show your personal Avatar!",
+  "kick": "Kicks the mentioned user from the Server!",
+  "ban": "Bans the mentioned user from the server!",
+  "help": "Your already here... but this command shows the command list, and allows you to get help with the commands!",
+  "invite": "Gives the invite URL for Risa!",
+  "ping": "Shows Risa's ping to Discord Servers!",
+  "timer": "`(hours) (minutes) (seconds)` \n\n Allows you to set a timer!"
+}

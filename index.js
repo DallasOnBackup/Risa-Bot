@@ -7,7 +7,7 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const client = new Discord.Client()
 client.config = {}
-client.config.color = "#FFFFFF"
+client.config.color = "#37fa3d"
 const port = 3000
 const botVersion = 1
 var prefix = "risa!"
@@ -20,15 +20,7 @@ app.listen(port)
 client.login(process.env.DISCORD_TOKEN)
 
 // Main Bot Code
-client.on('message', async message => {
-  /*
-  if (db.get(message.guild.id) != null) {
-    client.config.prefix = db.get(message.guild.id)
-  } else {
-    client.config.prefix = prefix
-  }
-  */
-})
+client.on('message', async message => {})
 
 // When bot is Ready, Log to Console
 client.on('ready', () => {

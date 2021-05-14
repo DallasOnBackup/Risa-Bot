@@ -1,0 +1,16 @@
+tempban
+tempkick
+mute
+tempmute
+play
+pause
+resume
+stop
+leave
+skip
+queue
+remove
+about
+help (Advanced)
+coinflip
+urban
