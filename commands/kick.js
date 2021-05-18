@@ -1,17 +1,19 @@
 const Discord = require("discord.js")
+const Pack = require("./functions")
 
 exports.run = async(client, message, args) => {
-  const embed = new Discord.MessageEmbed
-  .setColor(client.congig.color)
+  /* const embed = new Discord.MessageEmbed()
+  .setColor(client.config.color)
   const mention = message.mentions.users.first()
-  if (message.member.hasPermission("KICK_MEMBERS") || message.author.id == "781402171719286826") {
+  var result = Pack.hasPerms(message.member, ["KICK_MEMBERS"])
+  if (result.length == 0) {
     if (mention) {
       const member = message.guild.member(mention)
       if (member) {
         member
           .kick(args.join(" "))
           .then(() => {
-            embed.setTitle(`${mention.tag} banned successfully for:`)
+            embed.setTitle(`${mention.tag} kicked successfully for:`)
             .setDescription(`\`${args.join(" ")}\``)
             .setFooter(`Command Used by ${message.author}`)
             message.channel.send(embed)
@@ -27,6 +29,7 @@ exports.run = async(client, message, args) => {
       message.reply(`Invalid User!`)
     }
   } else {
-    message.reply("Missing Permissions: Kick Members")
-  }
+    message.reply(`Missing Permissions: ${result.join(", ")}`)
+  } */
+  message.reply("Kick Commands are currently unoperational, please come back later and try again!")
 }

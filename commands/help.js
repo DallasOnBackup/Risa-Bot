@@ -15,6 +15,5 @@ exports.run = async(client, message, args) => {
     {name: "Bot", value: "`ping` | `owner` | `about` | `help` | `invite`"},
     {name: "Utility", value: "`coinflip` | `timer` | `urban` | `av`"}
   )
-  .setFooter("NOTICE: SOME OF THESE THESE COMMANDS ARE PLANNED, NOT ALL OF THEM CURRENTLY WORK!")
   message.author.send(embed)
 }
