@@ -9,6 +9,7 @@ const fs = require('fs')
 const Discord = require('discord.js')
 const fetch = require('node-fetch')
 const client = new Discord.Client()
+require('dotenv').config()
 client.config = {}
 client.config.color = "#37fa3d"
 const port = 3000
