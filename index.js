@@ -87,7 +87,7 @@ app.get('/', (req, res) => res.send(`Risa v${botVersion} successfully deployed!`
 app.listen(port)
 
 // Client Login
-client.login("ODI0MTg2NDk0Mzg1NTIwNjkx.YFrtfA.iEFGbo0Fit8lWh-KxCtRLPojq1g")
+client.login(process.env.TOKEN)
 
 // Main Bot Code
 client.on('message', async message => {       
