@@ -87,10 +87,10 @@ app.get('/', (req, res) => res.send(`Risa v${botVersion} successfully deployed!`
 app.listen(port)
 
 // Client Login
-client.login(process.env.DISCORD_TOKEN)
+client.login("ODI0MTg2NDk0Mzg1NTIwNjkx.YFrtfA.iEFGbo0Fit8lWh-KxCtRLPojq1g")
 
 // Main Bot Code
-client.on('message', async message => {
+client.on('message', async message => {       
   /* Roleplay Commands DED
 	const command = args.shift().toLowerCase();
   if (command != null) {
@@ -102,6 +102,24 @@ client.on('message', async message => {
       .setFooter("Powered by YuaBot API: https://yuabot.com/api")
   }
   */
+    
+    
+    /* var snipes = JSON.parse(fs.readFileSync("snipes.json"))
+    let msg = snipes[snipes.length - 1]
+    let embed = new Discord.MessageEmbed()
+    .setColor(client.config.color)
+    .setAuthor(msg.author)
+    .setDescription(msg.content)
+    message.channel.send(embed) */
+})
+
+client.on('messageDelete', message => {
+    if (message.guild.id == "824463508686372914") {
+		var snipes = JSON.parse(fs.readFileSync("snipes.json"))
+    	snipes.push(`{"content": ${message.content}, "author": ${message.author.tag}}`)
+     	fs.writeFileSync("snipes.json", JSON.stringify(snipes))
+        console.log("Message Sniped Successfully")
+    }
 })
 
 function statusUpdate() {
